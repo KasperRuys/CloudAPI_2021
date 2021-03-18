@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Project_API_2021.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,16 +28,22 @@ namespace Project_API_2021
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<LeagueOfLegendsContext>(options =>
+           options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+           );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, LeagueOfLegendsContext lolContext)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            //app.UseMvc();
+
+            DBInit.Initialize(lolContext);
             app.UseHttpsRedirection();
 
             app.UseRouting();
